@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@root/*": ["./*"]
+    },
+    "noImplicitAny": false
+  },
+  "include": ["src/**/*", "*.js"],
+  "exclude": ["node_modules"]
+}
