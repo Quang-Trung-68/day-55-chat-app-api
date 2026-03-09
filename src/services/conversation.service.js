@@ -54,14 +54,38 @@ class ConversationService {
     }
   }
 
-  async getMessages(conversationId) {
-    return prisma.message.findMany({
+  async getConversation(conversationId) {
+    const conversation = await prisma.conversation.findUniqueOrThrow({
+      where: {
+        id: conversationId,
+      },
+    });
+    return conversation;
+  }
+
+  async getConversationUser(conversationId) {
+    const conversationUser = await prisma.conversationUser.findMany({
       where: {
         conversation_id: conversationId,
       },
-      orderBy: {
-        created_at: "asc",
+    });
+    return conversationUser;
+  }
+
+  async getMessages(conversationId, limit, before) {
+    const messages = await prisma.message.findMany({
+      where: {
+        conversation_id: conversationId,
+        ...(before && {
+          id: {
+            lt: before,
+          },
+        }),
       },
+      orderBy: {
+        created_at: "desc",
+      },
+      take: limit + 1,
       include: {
         user: {
           select: {
@@ -72,6 +96,33 @@ class ConversationService {
         },
       },
     });
+    let hasMore = false;
+    if (messages.length > limit) {
+      hasMore = true;
+      messages.pop();
+    }
+    messages.reverse();
+    const nextCursor = messages[0]?.id;
+    return {
+      messages,
+      pagination: {
+        hasMore,
+        nextCursor: hasMore ? nextCursor : null,
+      },
+    };
+  }
+
+  async getLatestMessage(conversationId) {
+    const message = await prisma.message.findFirst({
+      where: {
+        conversation_id: conversationId,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+      take: 1,
+    });
+    return message;
   }
 
   async createMessage(conversationId, userId, type, content) {
@@ -88,11 +139,12 @@ class ConversationService {
       },
     });
 
-    try {
-      pusher.trigger(`conversation-${conversationId}`, "created", message);
-    } catch (error) {
-      console.log(error);
-    }
+    const response = await pusher.trigger(
+      `conversation-${conversationId}`,
+      "created",
+      message,
+    );
+    console.log("trigger 1 message.", response);
 
     return message;
   }

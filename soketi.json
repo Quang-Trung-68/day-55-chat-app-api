@@ -1,0 +1,13 @@
+{
+  "appManager.driver": "array",
+  "appManager.array.apps": [
+    {
+      "id": "app-chat-1",
+      "key": "abc123",
+      "secret": "app-secret",
+      "enableClientMessages": true,
+      "enabled": true,
+      "maxConnections": 100
+    }
+  ]
+}
