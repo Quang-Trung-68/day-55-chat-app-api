@@ -8,8 +8,8 @@ function getAuthErrorStatus(errorCode) {
 }
 
 const register = async (req, res) => {
-    const { email, password } = req.body;
-    const newUser = await authService.register(email, password);
+    const { name, email, password } = req.body;
+    const newUser = await authService.register(name, email, password);
 
     await queueService.push("sendVerificationEmail", newUser);
 

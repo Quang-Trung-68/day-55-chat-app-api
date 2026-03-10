@@ -60,7 +60,7 @@ class AuthService {
             exp: Date.now() / 1000 + authConfig.verificationTokenTTL,
         };
         const token = jwt.sign(payload, authConfig.verificationJwtSecret);
-        const verificationLink = `${appConfig.url}/verify-email?token=${token}`;
+        const verificationLink = `${appConfig.frontendUrl}/verify-email?token=${token}`;
         return verificationLink;
     }
 
@@ -96,11 +96,11 @@ class AuthService {
         }
     }
 
-    async register(email, password) {
+    async register(name, email, password) {
         const hash = await bcrypt.hash(password, authConfig.saltRounds);
         const user = await prisma.user.create({
-            data: { email, password: hash },
-            select: { id: true, email: true },
+            data: { name, email, password: hash },
+            select: { id: true, name: true, email: true },
         });
         return user;
     }

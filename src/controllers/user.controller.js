@@ -10,4 +10,11 @@ const getDetail = async (req, res) => {
     res.success(user);
 };
 
-module.exports = { getAll, getDetail };
+const searchUsers = async (req, res) => {
+    const query = req.query.q || "";
+    const currentUserId = req.auth?.user?.id;
+    const users = await userService.searchUsers(query, currentUserId);
+    res.success(users);
+};
+
+module.exports = { getAll, getDetail, searchUsers };
