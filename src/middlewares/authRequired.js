@@ -19,6 +19,7 @@ async function authRequired(req, res, next) {
         select: {
             id: true,
             email: true,
+            name: true,
             password: true,
             created_at: true,
         },
