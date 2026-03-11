@@ -195,7 +195,11 @@ class ConversationService {
       },
     });
 
-    return conversations;
+    return conversations.sort((a, b) => {
+      const timeA = a.conversation.messages[0]?.created_at ?? new Date(0);
+      const timeB = b.conversation.messages[0]?.created_at ?? new Date(0);
+      return timeB - timeA; // desc: mới nhất lên trước
+    });
   }
 
   async checkUserInConversation(userId, conversationId) {
